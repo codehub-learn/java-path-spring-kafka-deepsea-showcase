@@ -1,0 +1,11 @@
+FROM apache/kafka:latest
+
+USER root
+
+RUN mkdir -p /data/kafka
+
+COPY start-kafka.sh /usr/bin
+
+RUN chmod +x /usr/bin/start-kafka.sh
+
+CMD ["/usr/bin/start-kafka.sh"]

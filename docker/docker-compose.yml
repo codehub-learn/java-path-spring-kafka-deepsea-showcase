@@ -1,23 +1,7 @@
 services:
-  #    kafka-ui:
-  #        container_name: kafka-ui
-  #        image: provectuslabs/kafka-ui:latest
-  #        depends_on:
-  #            - kafka-node1
-  #            - kafka-node2
-  #            - kafka-node3
-  #        ports:
-  #            - "9000:9000"
-  #        environment:
-  #            DYNAMIC_CONFIG_ENABLED: true
-  #            SERVER_PORT: "9000"
-  #            KAFKA_CLUSTERS_0_NAME: kafka-demo
-  #            KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-node1:19092
-  #        networks:
-  #            - kafka-net
   kafka-node1:
     container_name: kafka-node1
-    image: demo-apache-kafka:3.7.0
+    image: demo-kraft-kafka:latest
     ports:
       - "19092:19092"
     networks:
@@ -26,7 +10,7 @@ services:
       - ./config/kafka-node1/server.properties:/opt/kafka/config/kraft/server.properties
   kafka-node2:
     container_name: kafka-node2
-    image: demo-apache-kafka:3.7.0
+    image: demo-kraft-kafka:latest
     ports:
       - "29092:29092"
     networks:
@@ -35,7 +19,7 @@ services:
       - ./config/kafka-node2/server.properties:/opt/kafka/config/kraft/server.properties
   kafka-node3:
     container_name: kafka-node3
-    image: demo-apache-kafka:3.7.0
+    image: demo-kraft-kafka:latest
     ports:
       - "39092:39092"
     networks:
