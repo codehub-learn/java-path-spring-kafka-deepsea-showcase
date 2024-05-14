@@ -38,13 +38,13 @@ public class KafkaProducerConfig {
 	}
 
 	@Bean
-	public NewTopic newTopic() {
+	public NewTopic generateNewTopic() {
 		return TopicBuilder.name(genericTopic)
 						   .partitions(6).replicas(2).build();
 	}
 
 	@Bean
-	public KafkaTemplate<Long, Object> kafkaTemplate() {
+	public KafkaTemplate<Long, Object> generateKafkaTemplate() {
 		return new KafkaTemplate<>(producerFactory());
 	}
 
