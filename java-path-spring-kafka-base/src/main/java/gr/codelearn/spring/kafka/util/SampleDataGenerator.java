@@ -13,34 +13,27 @@ public final class SampleDataGenerator {
 	private static final Faker faker = new Faker();
 
 	public static List<Person> generatePersons(final int howMany) {
-		return IntStream.range(0, howMany)
-						.mapToObj(i -> generatePerson())
-						.toList();
+		return IntStream.range(1, howMany + 1)
+						.mapToObj(i -> generatePerson()).toList();
 	}
 
 	private static Person generatePerson() {
-		var firstName = faker.name().firstName();
-		var lastName = faker.name().lastName();
-
-		return Person.builder()
-					 .firstName(firstName)
-					 .lastName(lastName)
-					 .email(String.format("%s.%s@gmailx.com", firstName.toLowerCase(), lastName.toLowerCase()))
-					 .phoneNumber(faker.phoneNumber().phoneNumberInternational())
-					 .age(faker.number().numberBetween(18, 100))
-					 .build();
+		var firstName = faker.name().firstName().replaceAll("'", "");
+		var lastName = faker.name().lastName().replaceAll("'", "");
+		return new Person(firstName, lastName,
+						  String.format("%s.%s@gmailx.com", firstName.toLowerCase(), lastName.toLowerCase()),
+						  faker.phoneNumber().phoneNumberInternational(),
+						  faker.number().numberBetween(18, 100));
 	}
 
-	public static List<Donation> generateDomations(final int howMany) {
-		return IntStream.range(0, howMany)
-						.mapToObj(i -> generateDonation())
-						.toList();
+	public static List<Donation> generateDonations(final int howMany) {
+		return IntStream.range(1, howMany + 1)
+						.mapToObj(i -> generateDonation()).toList();
 	}
 
 	private static Donation generateDonation() {
-		return Donation.builder().madeAt(faker.date().past(100, TimeUnit.DAYS))
-					   .donor(generatePerson())
-					   .amount(BigDecimal.valueOf(faker.number().randomDouble(2, 1, 100)))
-					   .build();
+		return new Donation(faker.date().past(100, TimeUnit.DAYS),
+							generatePerson(),
+							BigDecimal.valueOf(faker.number().randomDouble(2, 1, 100)));
 	}
 }
