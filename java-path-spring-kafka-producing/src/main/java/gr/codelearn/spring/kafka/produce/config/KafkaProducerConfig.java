@@ -61,6 +61,7 @@ public class KafkaProducerConfig {
 					  ProducerConfig.MAX_BLOCK_MS_CONFIG, "30000",
 					  ProducerConfig.ACKS_CONFIG, "all",
 					  ProducerConfig.CLIENT_ID_CONFIG, "demo-producer",
-					  ProducerConfig.RETRIES_CONFIG, "3");
+					  ProducerConfig.RETRIES_CONFIG, "3",
+					  JsonSerializer.ADD_TYPE_INFO_HEADERS, "true");
 	}
 }
