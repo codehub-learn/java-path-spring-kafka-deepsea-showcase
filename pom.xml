@@ -32,6 +32,7 @@
 		<module>java-path-spring-kafka-base</module>
 		<module>java-path-spring-kafka-topic</module>
 		<module>java-path-spring-kafka-producing</module>
+		<module>java-path-spring-kafka-consuming</module>
 	</modules>
 
 	<!-- Properties/Variables -->
