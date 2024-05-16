@@ -6,8 +6,10 @@ import gr.codelearn.spring.kafka.util.SampleDataGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile("!skip-runner")
 @Component
 @RequiredArgsConstructor
 public class ProducerRunner extends BaseComponent implements CommandLineRunner {
@@ -17,7 +19,39 @@ public class ProducerRunner extends BaseComponent implements CommandLineRunner {
 
 	@Override
 	public void run(final String... args) throws Exception {
-		SampleDataGenerator.generatePersons(10).forEach(p -> sampleProducer.sendMessageWithoutKeys(genericTopic,
-																								   p));
+		//		logger.info("-----------Sending messages without keys-----------");
+		//		Thread.sleep(1000);
+		//		SampleDataGenerator.generatePersons(10).forEach(
+		//				p -> sampleProducer.sendMessageWithoutKey(genericTopic, p));
+		//
+		//		Thread.sleep(2000);
+		//		logger.info("-----------Sending messages asynchronously-----------");
+		//		Thread.sleep(1000);
+		//		SampleDataGenerator.generatePersons(100).forEach(
+		//				p -> sampleProducer.sendMessageWithKeyAsync(genericTopic, ThreadLocalRandom.current().nextLong
+		//				(1, 101),
+		//															p));
+		//
+		//		Thread.sleep(2000);
+		//		logger.info("-----------Sending messages synchronously-----------");
+		//		Thread.sleep(1000);
+		//		SampleDataGenerator.generatePersons(50).forEach(
+		//				p -> sampleProducer.sendMessageWithKeyAsync(genericTopic, ThreadLocalRandom.current().nextLong
+		//				(1, 101),
+		//															p));
+		//
+		//		Thread.sleep(2000);
+		//		logger.info("-----------Sending messages using producer record -----------");
+		//		Thread.sleep(1000);
+		//		SampleDataGenerator.generatePersons(50).forEach(
+		//				p -> sampleProducer.sendMessageWithKeyRecord(genericTopic, ThreadLocalRandom.current()
+		//				.nextLong(1,
+		//																												101),
+		//															 p));
+		//		Thread.sleep(2000);
+		logger.info("-----------Sending messages using transactions -----------");
+		Thread.sleep(1000);
+
+		sampleProducer.sendMessageWithKeyTransactionally(genericTopic, SampleDataGenerator.generatePersons(10));
 	}
 }

@@ -16,7 +16,7 @@ spring:
 
 app:
   kafka:
-    topic:
+    topics:
       generic: demo-kafka-generic
       person: demo-kafka-persons
-      donation: dmeo-kafka-donations
+      donation: demo-kafka-donations
