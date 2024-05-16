@@ -26,6 +26,20 @@ public final class SampleDataGenerator {
 						  faker.number().numberBetween(18, 100));
 	}
 
+	public static List<Person> generateFilteredOutPersons(final int howMany) {
+		return IntStream.range(1, howMany + 1)
+						.mapToObj(i -> generateFilteredOutPerson()).toList();
+	}
+
+	private static Person generateFilteredOutPerson() {
+		var firstName = faker.name().firstName().replaceAll("'", "");
+		var lastName = "Invalid";
+		return new Person(firstName, lastName,
+						  String.format("%s.%s@gmailx.com", firstName.toLowerCase(), lastName.toLowerCase()),
+						  faker.phoneNumber().phoneNumberInternational(),
+						  faker.number().numberBetween(18, 100));
+	}
+
 	public static List<Donation> generateDonations(final int howMany) {
 		return IntStream.range(1, howMany + 1)
 						.mapToObj(i -> generateDonation()).toList();
@@ -35,5 +49,21 @@ public final class SampleDataGenerator {
 		return new Donation(faker.date().past(100, TimeUnit.DAYS),
 							generatePerson(),
 							BigDecimal.valueOf(faker.number().randomDouble(2, 1, 100)));
+	}
+
+	public static List<Donation> generateErroneousDonations(final int howMany) {
+		return IntStream.range(1, howMany + 1)
+						.mapToObj(i -> generateErroneousDonation()).toList();
+	}
+
+	private static Donation generateErroneousDonation() {
+		return new Donation(faker.date().past(100, TimeUnit.DAYS),
+							null,
+							BigDecimal.valueOf(faker.number().randomDouble(2, 1, 100)));
+	}
+
+	public static List<String> generateContent(final int howMany) {
+		return IntStream.range(1, howMany + 1)
+						.mapToObj(i -> faker.famousLastWords().lastWords()).toList();
 	}
 }

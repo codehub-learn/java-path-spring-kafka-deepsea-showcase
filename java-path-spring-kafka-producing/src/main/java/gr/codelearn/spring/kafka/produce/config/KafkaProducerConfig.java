@@ -40,33 +40,9 @@ public class KafkaProducerConfig extends BaseComponent {
 		return new KafkaAdmin(configs);
 	}
 
-	@Bean
-	public KafkaAdmin.NewTopics generateTopics() {
-		return new KafkaAdmin.NewTopics(createKeylessTopic(genericTopic),
-										createKeyfulTopic(personsTopic),
-										createKeyfulTopic(donationTopic));
-	}
-
-	private NewTopic createKeyfulTopic(final String topicName) {
-		return TopicBuilder.name(topicName)
-						   .partitions(6)
-						   .replicas(3)
-						   .compact()
-						   .config(TopicConfig.MIN_IN_SYNC_REPLICAS_CONFIG, "2")
-						   .build();
-	}
-
-	private NewTopic createKeylessTopic(final String topicName) {
-		return TopicBuilder.name(topicName)
-						   .partitions(3)
-						   .replicas(2)
-						   .config(TopicConfig.MIN_IN_SYNC_REPLICAS_CONFIG, "2")
-						   .build();
-	}
-
 	@Primary
 	@Bean
-	public KafkaTemplate<Long, Object> generateKafkaTemplate() {
+	public KafkaTemplate<Long, Object> kafkaTemplate() {
 		var kafkaTemplate = new KafkaTemplate<>(producerFactory(false));
 		//		kafkaTemplate.setProducerListener(new ProducerListener<>() {
 		//			@Override
@@ -100,6 +76,16 @@ public class KafkaProducerConfig extends BaseComponent {
 		return new DefaultKafkaProducerFactory<>(configProperties);
 	}
 
+	@Bean("multiTypeKafkaTemplate")
+	public KafkaTemplate<Long, Object> multiTypeKafkaTemplate() {
+		return new KafkaTemplate<>(multiTypeFactory());
+	}
+
+	private ProducerFactory<Long, Object> multiTypeFactory() {
+		var configProperties = getDefaultConfigurationProperties();
+		return new DefaultKafkaProducerFactory<>(configProperties);
+	}
+
 	private Map<String, Object> getDefaultConfigurationProperties() {
 		Map<String, Object> configProperties = new HashMap<>();
 		configProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -114,5 +100,29 @@ public class KafkaProducerConfig extends BaseComponent {
 		configProperties.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, "true");
 
 		return configProperties;
+	}
+
+	@Bean
+	public KafkaAdmin.NewTopics generateTopics() {
+		return new KafkaAdmin.NewTopics(createKeylessTopic(genericTopic),
+										createKeyfulTopic(personsTopic),
+										createKeyfulTopic(donationTopic));
+	}
+
+	private NewTopic createKeyfulTopic(final String topicName) {
+		return TopicBuilder.name(topicName)
+						   .partitions(6)
+						   .replicas(3)
+						   .compact()
+						   .config(TopicConfig.MIN_IN_SYNC_REPLICAS_CONFIG, "2")
+						   .build();
+	}
+
+	private NewTopic createKeylessTopic(final String topicName) {
+		return TopicBuilder.name(topicName)
+						   .partitions(3)
+						   .replicas(2)
+						   .config(TopicConfig.MIN_IN_SYNC_REPLICAS_CONFIG, "2")
+						   .build();
 	}
 }

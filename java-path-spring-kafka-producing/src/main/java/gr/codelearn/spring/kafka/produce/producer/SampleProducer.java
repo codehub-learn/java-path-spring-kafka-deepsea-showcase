@@ -24,71 +24,78 @@ public class SampleProducer extends BaseComponent {
 	@Qualifier("transactionalKafkaTemplate")
 	private final KafkaTemplate<Long, Object> transactionalKafkaTemplate;
 
-	public void sendMessageWithoutKey(final String topic, final Object message) {
-		var future = kafkaTemplate.send(topic, message);
+	@Autowired
+	@Qualifier("multiTypeKafkaTemplate")
+	private final KafkaTemplate<Long, Object> multiTypeKafkaTemplate;
+
+	public void sendMessageWithoutKey(final String topic, final Object value) {
+		kafkaTemplate.send(topic, value);
+		logger.debug("Topic {}, {}.", topic, value);
+	}
+
+	public void sendMessageWithKeyAsync(final String topic, final Long key, final Object value) {
+		var future = kafkaTemplate.send(topic, key, value);
 
 		future.whenComplete((result, ex) -> {
-			if (ex != null) {
-				logger.error("Error sending message '{}' to topic {}.", message, topic, ex);
-			} else {
-				logger.debug("{}:{} delivered to {}@{}.", result.getProducerRecord().key(),
+			if (ex == null) {
+				logger.debug("{}:{}, delivered to {}@{}.", result.getProducerRecord().key(),
 							 result.getProducerRecord().value(), result.getRecordMetadata().partition(),
 							 result.getRecordMetadata().offset());
+			} else {
+				logger.warn("Unable to deliver message {}:{}.", key, value, ex);
 			}
 		});
 	}
 
-	public void sendMessageWithKeyAsync(final String topic, final Long key, final Object message) {
-		var future = kafkaTemplate.send(topic, key, message);
-
-		future.whenComplete((result, ex) -> {
-			if (ex != null) {
-				logger.error("Error sending message '{}' to topic {}.", message, topic, ex);
-			} else {
-				logger.debug("{}:{} delivered to {}@{}.", result.getProducerRecord().key(),
-							 result.getProducerRecord().value(), result.getRecordMetadata().partition(),
-							 result.getRecordMetadata().offset());
-			}
-		});
-	}
-
-	public void sendMessageWithKeySync(final String topic, final Long key, final Object message)
+	public void sendMessageWithKeySync(final String topic, final Long key, final Object value)
 			throws ExecutionException, InterruptedException {
-		var result = kafkaTemplate.send(topic, key, message).get();
-		logger.debug("{}:{} delivered to {}@{}.", result.getProducerRecord().key(),
+		var result = kafkaTemplate.send(topic, key, value).get();
+
+		logger.debug("{}:{}, delivered to {}@{}.", result.getProducerRecord().key(),
 					 result.getProducerRecord().value(), result.getRecordMetadata().partition(),
 					 result.getRecordMetadata().offset());
 	}
 
-	public void sendMessageWithKeyRecord(final String topic, final Long key, final Object message) {
-		var future = kafkaTemplate.send(getProducerRecord(topic, key, message));
+	public void sendMessageWithKeyRecord(final String topic, final Long key, final Object value) {
+		var future = kafkaTemplate.send(generateProducerRecord(topic, key, value));
 
 		future.whenComplete((result, ex) -> {
-			if (ex != null) {
-				logger.error("Error sending message '{}' to topic {}.", message, topic, ex);
-			} else {
-				logger.debug("{}:{} delivered to {}@{}.", result.getProducerRecord().key(),
+			if (ex == null) {
+				logger.debug("{}:{}, delivered to {}@{}.", result.getProducerRecord().key(),
 							 result.getProducerRecord().value(), result.getRecordMetadata().partition(),
 							 result.getRecordMetadata().offset());
+			} else {
+				logger.warn("Unable to deliver message {}:{}.", key, value, ex);
 			}
 		});
-	}
-
-	private ProducerRecord<Long, Object> getProducerRecord(final String topic, final Long key, final Object message) {
-		var producerRecord = new ProducerRecord<>(topic, key, message);
-		producerRecord.headers().add(new RecordHeader("header-key", UUID.randomUUID().toString().getBytes()));
-		return producerRecord;
 	}
 
 	public void sendMessageWithKeyTransactionally(final String topic, final List<Person> persons) {
 		transactionalKafkaTemplate.executeInTransaction(kafkaTemplate -> {
 			persons.forEach(p -> {
-				var key = ThreadLocalRandom.current().nextLong(1, 101);
+				var key = ThreadLocalRandom.current().nextLong(1, 7);
 				kafkaTemplate.send(topic, key, p);
 				logger.debug("Topic {}, {}:{}.", topic, key, p);
 			});
 			//throw new RuntimeException("Break transaction");
 			return true;
 		});
+	}
+
+	public void sendMessageWithKeyMulti(final String topic, final Long key, final Object value)
+			throws ExecutionException, InterruptedException {
+		var result = multiTypeKafkaTemplate.send(topic, key, value).get();
+
+		logger.debug("{}:{}, delivered to {}@{}.", result.getProducerRecord().key(),
+					 result.getProducerRecord().value(), result.getRecordMetadata().partition(),
+					 result.getRecordMetadata().offset());
+	}
+
+	private ProducerRecord<Long, Object> generateProducerRecord(final String topic, final Long key,
+																final Object value) {
+		var producerRecord = new ProducerRecord<>(topic, key, value);
+		producerRecord.headers().add(new RecordHeader("Sample header", UUID.randomUUID().toString().getBytes()));
+
+		return producerRecord;
 	}
 }
