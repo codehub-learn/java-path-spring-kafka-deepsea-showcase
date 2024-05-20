@@ -8,9 +8,8 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class PersonConsumer extends BaseComponent {
 	@KafkaListener(topics = "${app.kafka.topics.person}", groupId = "person-group", concurrency = "1")
 	@SendTo("${app.kafka.topics.person-forward}")

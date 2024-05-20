@@ -5,11 +5,10 @@ import gr.codelearn.spring.kafka.domain.Donation;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
+//@Component
 public class DonationConsumer extends BaseComponent {
 	@KafkaListener(topics = "${app.kafka.topics.donation}", groupId = "donation-group", concurrency = "1")
 	public void listen(ConsumerRecord<Long, Donation> consumerRecord) {

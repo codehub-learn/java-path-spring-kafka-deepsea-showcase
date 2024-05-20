@@ -11,8 +11,8 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 @Component
-@KafkaListener(id = "generic-multi-1", topics = "${app.kafka.topics.generic}", containerFactory =
-		"multiTypeKafkaListenerContainerFactory")
+@KafkaListener(id = "generic-multi-1", topics = "${app.kafka.topics.generic}",
+			   containerFactory = "multiTypeKafkaListenerContainerFactory")
 public class MultiTypeConsumer extends BaseComponent {
 	@KafkaHandler
 	public void handle(Donation donation, ConsumerRecordMetadata metadata,
