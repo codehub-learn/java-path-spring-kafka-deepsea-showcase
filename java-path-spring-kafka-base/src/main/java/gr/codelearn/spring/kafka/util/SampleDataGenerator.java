@@ -48,7 +48,7 @@ public final class SampleDataGenerator {
 	private static Donation generateDonation() {
 		return new Donation(faker.date().past(100, TimeUnit.DAYS),
 							generatePerson(),
-							BigDecimal.valueOf(faker.number().randomDouble(2, 1, 100)));
+							BigDecimal.valueOf(faker.number().randomDouble(2, 1, 200)));
 	}
 
 	public static List<Donation> generateErroneousDonations(final int howMany) {

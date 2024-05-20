@@ -1,0 +1,16 @@
+spring:
+  kafka:
+    bootstrap-servers: 127.0.0.1:19092,127.0.0.1:29092,127.0.0.1:39092
+    consumer:
+      group-id: demo-kafka-streams-group
+  threads:
+    virtual:
+      enabled: true
+app:
+  kafka:
+    topics:
+      donation: demo-kafka-donations
+      donation-count: demo-kafka-donations-count
+      donation-organization: demo-kafka-donations-organization
+      donation-high: demo-kafka-donations-high
+      donation-low: demo-kafka-donations-low
