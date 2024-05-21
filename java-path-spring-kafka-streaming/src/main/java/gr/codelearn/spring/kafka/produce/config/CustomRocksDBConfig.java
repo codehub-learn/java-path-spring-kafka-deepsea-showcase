@@ -14,7 +14,7 @@ public class CustomRocksDBConfig implements RocksDBConfigSetter {
 		// Reduce block cache size from the default as the total number of store RocksDB databases is
 		// partitions (40) * segments (3) = 120.
 		// @see https://github.com/apache/kafka/blob/1.0/streams/src/main/java/org/apache/kafka/streams/state/internals/RocksDBStore.java#L81
-		BlockBasedTableConfig tableConfig = new org.rocksdb.BlockBasedTableConfig();
+		BlockBasedTableConfig tableConfig = new BlockBasedTableConfig();
 		tableConfig.setBlockCacheSize(16 * 1024 * 1024L);
 		// tableConfig.setBlockSize(16 * 1024L);
 		// Modify the default block size per these instructions from the RocksDB GitHub.

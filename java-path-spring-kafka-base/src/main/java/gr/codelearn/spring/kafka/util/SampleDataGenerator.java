@@ -1,11 +1,12 @@
 package gr.codelearn.spring.kafka.util;
 
 import gr.codelearn.spring.kafka.domain.Donation;
+import gr.codelearn.spring.kafka.domain.Organization;
 import gr.codelearn.spring.kafka.domain.Person;
 import net.datafaker.Faker;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -48,7 +49,9 @@ public final class SampleDataGenerator {
 	private static Donation generateDonation() {
 		return new Donation(faker.date().past(100, TimeUnit.DAYS),
 							generatePerson(),
-							BigDecimal.valueOf(faker.number().randomDouble(2, 1, 200)));
+							faker.number().numberBetween(1, 200),
+							Organization.values()[ThreadLocalRandom.current()
+																   .nextInt(1, (Organization.values().length))]);
 	}
 
 	public static List<Donation> generateErroneousDonations(final int howMany) {
@@ -59,7 +62,9 @@ public final class SampleDataGenerator {
 	private static Donation generateErroneousDonation() {
 		return new Donation(faker.date().past(100, TimeUnit.DAYS),
 							null,
-							BigDecimal.valueOf(faker.number().randomDouble(2, 1, 100)));
+							faker.number().numberBetween(1, 200),
+							Organization.values()[ThreadLocalRandom.current()
+																   .nextInt(1, (Organization.values().length))]);
 	}
 
 	public static List<String> generateContent(final int howMany) {

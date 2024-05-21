@@ -1,9 +1,7 @@
 package gr.codelearn.spring.kafka.produce.config;
 
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,8 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import org.springframework.kafka.config.TopicBuilder;
-import org.springframework.kafka.core.KafkaAdmin;
 
 import java.util.HashMap;
 
@@ -25,15 +21,6 @@ public class KafkaStreamConfig {
 
 	@Value("${spring.kafka.consumer.group-id}")
 	private String streamConsumerGroupId;
-
-	@Value("${app.kafka.topics.donation-count}")
-	private String donationsCountTopic;
-	@Value("${app.kafka.topics.donation-organization}")
-	private String donationsPerOrganizationTopic;
-	@Value("${app.kafka.topics.donation-high}")
-	private String donationsHighTopic;
-	@Value("${app.kafka.topics.donation-low}")
-	private String donationsLowTopic;
 
 	@Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 	public KafkaStreamsConfiguration kafkaStreamsConfig() {
@@ -53,36 +40,11 @@ public class KafkaStreamConfig {
 		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 		props.put(ConsumerConfig.GROUP_ID_CONFIG, streamConsumerGroupId);
 		props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+		props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "8192");
 
 		// For producer and consumer settings used internally
 		// @see https://kafka.apache.org/10/documentation/streams/developer-guide/config-streams.html#kafka-consumers-and-producer-configuration-parameters
 
 		return new KafkaStreamsConfiguration(props);
-	}
-
-	@Bean
-	public KafkaAdmin.NewTopics generateTopics() {
-		return new KafkaAdmin.NewTopics(
-				createKeyfulTopic(donationsCountTopic),
-				createKeyfulTopic(donationsPerOrganizationTopic),
-				createKeyfulTopic(donationsHighTopic),
-				createKeyfulTopic(donationsLowTopic));
-	}
-
-	private NewTopic createKeyfulTopic(final String topicName) {
-		return TopicBuilder.name(topicName)
-						   .partitions(2)
-						   .replicas(2)
-						   .compact()
-						   .config(TopicConfig.MIN_IN_SYNC_REPLICAS_CONFIG, "2")
-						   .build();
-	}
-
-	private NewTopic createKeylessTopic(final String topicName) {
-		return TopicBuilder.name(topicName)
-						   .partitions(3)
-						   .replicas(2)
-						   .config(TopicConfig.MIN_IN_SYNC_REPLICAS_CONFIG, "2")
-						   .build();
 	}
 }
